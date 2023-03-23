@@ -1,0 +1,11 @@
+<component name="ProjectRunConfigurationManager">
+<configuration default="false" name="Main" type="Application" factoryName="Application">
+  <option name="MAIN_CLASS_NAME" value="command.Main" />
+  <module name="ex2-java-neviim-ex2_nadav_malul_ely_asaf" />
+  <RunnerSettings RunnerId="Run" />
+  <ConfigurationWrapper RunnerId="Run" />
+  <method v="2">
+    <option name="Make" enabled="true" />
+  </method>
+</configuration>
+</component>
