@@ -15,7 +15,7 @@ public class FlagFactory {
         if (flagFunc != null) {
             return flagFunc.get(); // this is equivalent to calling the constructor of the flag
         }
-        // else
-        throw new IllegalArgumentException("No such flag in our factory: " + type.name());
+        else
+            return null;
     }
 }

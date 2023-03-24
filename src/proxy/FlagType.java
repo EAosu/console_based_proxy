@@ -1,5 +1,5 @@
 package proxy;
 
 public enum FlagType {
-    Images,Http,HTML,FromFile
+    Images,Cookies,HTML,FromFile
 }

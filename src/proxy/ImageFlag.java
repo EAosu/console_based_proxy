@@ -12,7 +12,6 @@ public class ImageFlag extends Flag
     @Override
     public Boolean isValid(){
         try{
-            System.out.println("Checking");
             if (conType.startsWith("image/")) {
                 throw new IOException("denied");
             }
