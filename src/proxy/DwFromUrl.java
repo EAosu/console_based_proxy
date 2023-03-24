@@ -1,13 +1,11 @@
 package proxy;
 
-import java.io.IOException;
 import java.net.URL;
 import java.net.HttpURLConnection;
-import java.net.http.*;
 import java.io.*;
-import java.net.URI;
-import java.util.ArrayList;
 import java.util.function.Supplier;
+import java.util.List;
+import java.util.Map;
 
 public class DwFromUrl implements Command {
     FlagFactory flagFactory = new FlagFactory();
@@ -25,22 +23,34 @@ public class DwFromUrl implements Command {
         }
     }
     public void registerFlag(char flag) {
+        Supplier<Flag> supplier = null;
+        FlagType type = null;
         switch (flag) {
             case 'i':
-                String conType = this.con.getHeaderField("Content-Type");
-                Supplier<Flag> supplier = () -> new ImageFlag(conType);
-                flagFactory.register(FlagType.Images, supplier);
+                String conTypeForImage = this.con.getHeaderField("Content-Type");
+                supplier = () -> new ImageFlag(conTypeForImage);
+                type = FlagType.Images;
                 break;
             case 'h':
-                //flagFactory.register(FlagType.Images, ImageFlag::new);
+                String conTypeForHTML = this.con.getHeaderField("Content-Type");
+                supplier = () -> new HTMLFlag(conTypeForHTML);
+                type = FlagType.HTML;
+                break;
+
                 //case 'b':
                 //flagFactory.register(FlagType.Images, ImageFlag::new);
+
             case 'f':
-                //flagFactory.register(FlagType.Images, ImageFlag::new);
+                String cookieHeader = this.con.getHeaderField("Set-Cookie");
+                supplier = () -> new CookiesFlag(cookieHeader);
+                type = FlagType.Cookies;
+                break;
             default:
                 throw new IllegalArgumentException("invalid option");
         }
+        flagFactory.register(type, supplier);
     }
+
     public HttpURLConnection getConnection() throws IOException{
         HttpURLConnection con = (HttpURLConnection) this.url.openConnection();
         con.setRequestMethod("GET");
@@ -52,6 +62,19 @@ public class DwFromUrl implements Command {
             System.out.println("failed to download " + fileName);
         }
         return con;
+    }
+    private void download() throws IOException {
+        InputStream input = new BufferedInputStream(url.openStream());
+        OutputStream output = new BufferedOutputStream(new FileOutputStream(out));
+        int b;
+        while ((b = input.read()) != -1) {
+            output.write(b);
+        }
+
+        // we finished writing, fail on closing input is not fatal
+        try { input.close(); } catch (Exception e) {}
+
+        output.close();
     }
     @Override
     public void execute() {
@@ -65,19 +88,5 @@ public class DwFromUrl implements Command {
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
-    }
-
-    private void download() throws IOException {
-        InputStream input = new BufferedInputStream(url.openStream());
-        OutputStream output = new BufferedOutputStream(new FileOutputStream(out));
-        int b;
-        while ((b = input.read()) != -1) {
-            output.write(b);
-        }
-
-        // we finished writing, fail on closing input is not fatal
-        try { input.close(); } catch (Exception e) {}
-
-        output.close();
     }
 }
