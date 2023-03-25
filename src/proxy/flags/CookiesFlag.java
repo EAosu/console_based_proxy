@@ -1,4 +1,6 @@
-package proxy;
+package proxy.flags;
+
+import proxy.Errors;
 
 import java.io.IOException;
 
@@ -9,8 +11,8 @@ public class CookiesFlag extends Flag {
     @Override
     public Boolean isValid(){
         try{
-            if (conType != null && conType.toLowerCase().contains("cookie")) {
-                throw new IOException("denied");
+            if (data != null) {
+                throw new IOException(Errors.DENIED);
             }
             return true;
         }

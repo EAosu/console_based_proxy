@@ -1,4 +1,4 @@
-package proxy;
+package proxy.flags;
 
 import java.io.IOException;
 
@@ -9,8 +9,8 @@ public class HTMLFlag extends Flag {
     @Override
     public Boolean isValid(){
         try{
-            if (conType.startsWith("text/html")) {
-                throw new IOException("denied");
+            if (data.startsWith(HTML_PREFIX)) {
+                throw new IOException(DENIED);
             }
             return true;
         }

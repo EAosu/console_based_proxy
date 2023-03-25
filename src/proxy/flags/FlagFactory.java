@@ -1,4 +1,4 @@
-package proxy;
+package proxy.flags;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;

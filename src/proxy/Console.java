@@ -1,40 +1,47 @@
 package proxy;
+import proxy.commands.*;
+
+import javax.naming.NamingException;
 import java.util.*;
 import java.io.IOException;
-import java.net.URL;
-import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 
-public class Console {
+public class Console implements Errors {
+    public static final String LINE_PREFIX = "> ";
+    public static final int SUCCESS = 0, DOWNLOAD_ARGUMENT_MIN = 3;
+    public static final int COMMAND = 0, FLAGS_OR_URL = 1, OUT_OR_URL = 2, OUT = 3;
+    public static final String BLOCK_URL = "b", UNBLOCK_URL = "u", PRINT = "p", DOWNLOAD = "d", EXIT = "q";
     public void run() {
         Scanner scanner = new Scanner(System.in);
         while (true) {
-            System.out.print("> ");
+            System.out.print(LINE_PREFIX);
             String input = scanner.nextLine().trim();
             String[] tokens = input.split("\\s+");
 
             try {
-                switch (tokens[0]) {
-                    case "b":
-                        if (isValidUrl(tokens[1]))
-                            executeCommand(new BlockURL(tokens[1]));
-                        else throw new IllegalArgumentException("Invalid URL");
+                switch (tokens[COMMAND]) {
+                    case BLOCK_URL:
+                        if (isValidUrl(tokens[FLAGS_OR_URL]))
+                            executeCommand(new BlockURL(tokens[FLAGS_OR_URL]));
+                        else throw new IllegalArgumentException(INVALID_URL);
                         break;
-                    case "u":
-                        if (isValidUrl(tokens[1]))
-                            executeCommand(new UnblockURL(tokens[1]));
-                        else throw new IllegalArgumentException("Invalid URL");
+                    case UNBLOCK_URL:
+                        if (isValidUrl(tokens[FLAGS_OR_URL]))
+                            executeCommand(new UnblockURL(tokens[FLAGS_OR_URL]));
+                        else throw new IllegalArgumentException(INVALID_URL);
                         break;
-                    case "p":
+                    case PRINT:
                         executeCommand(new PrintList());
                         break;
-                    case "d":
+                    case DOWNLOAD:
                         executeDownload(tokens);
                         break;
-                    case "q":
+                    case EXIT:
                         exit();
                         break;
                     default:
-                        System.out.println("invalid command");
+                        System.out.println(INVALID_COMMAND);
                         break;
                 }
             } catch (Exception e) {
@@ -48,7 +55,7 @@ public class Console {
     }
 
     private void exit() {
-        System.exit(0);
+        System.exit(SUCCESS);
     }
 
     private void executeDownload(String[] tokens) throws IOException {
@@ -56,55 +63,29 @@ public class Console {
         String url = "";
         String out = "";
 
-        if(tokens.length < 3)
-            throw new IllegalArgumentException("invalid command");
-        else if (tokens.length == 3) {
+        if(tokens.length < DOWNLOAD_ARGUMENT_MIN)
+            throw new IllegalArgumentException(INVALID_COMMAND);
+        else if (tokens.length == DOWNLOAD_ARGUMENT_MIN) {
             flags = "";
-            url = tokens[1];
-            out = tokens[2];
+            url = tokens[FLAGS_OR_URL];
+            out = tokens[OUT_OR_URL];
         } else {
-            flags = tokens[1].substring(1);
-            url = tokens[2];
-            out = tokens[3];
+            flags = tokens[FLAGS_OR_URL].substring(1);
+            url = tokens[OUT_OR_URL];
+            out = tokens[OUT];
         }
 
         if(isValidUrl(url))
-            executeCommand(new DwFromUrl(url, flags, out));
-        else throw new IllegalArgumentException("invalid URL");
+            executeCommand(new DownloadFromURL(url, flags, out));
+        else throw new IllegalArgumentException(INVALID_URL);
     }
     public static boolean isValidUrl(String urlString) {
         try {
-            // Create a new URL object with the given string
-            URL url = new URL(urlString);
-
-            // The URL constructor does not throw an exception
-            // if the URL syntax is valid, so we need to check
-            // some other properties to ensure it is valid.
-
-            // Check the protocol (http, https, ftp, etc.)
-            String protocol = url.getProtocol();
-            if (!"http".equals(protocol) && !"https".equals(protocol) && !"ftp".equals(protocol)) {
-                return false;
-            }
-
-            // Check that the host name is not empty
-            String host = url.getHost();
-            if (host == null || host.isEmpty()) {
-                return false;
-            }
-
-            // Check that the path is valid
-            String path = url.getPath();
-            if (path == null) {
-                return false;
-            }
-
-            // If all checks passed, the URL is considered valid
-            return true;
-
-        } catch (MalformedURLException e) {
-            // If an exception is thrown, the URL syntax is invalid
+            URI uri = new URI(urlString);
+            return uri.getScheme() != null && uri.getHost() != null;
+        } catch (URISyntaxException e) {
             return false;
         }
     }
+
 }

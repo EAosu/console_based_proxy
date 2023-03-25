@@ -1,7 +1,10 @@
-package proxy;
+package proxy.commands;
+import proxy.Errors;
+import proxy.commands.Command;
+
 import java.io.*;
 
-public class UnblockURL implements Command {
+public class UnblockURL implements Command, Errors {
     private String URL;
     public UnblockURL(String URL) {
         this.URL = URL;
@@ -14,7 +17,7 @@ public class UnblockURL implements Command {
             String modifiedFileContent = removeLine(fileContent, URL);
             writeContentToFile(file, modifiedFileContent);
         } catch (IOException ioe) {
-            System.err.println("Removing URL failed.");
+            System.out.println(READ_ERROR);
         }
     }
 
@@ -32,13 +35,18 @@ public class UnblockURL implements Command {
     private String removeLine(String fileContent, String lineToRemove) {
         StringBuilder modifiedContent = new StringBuilder();
         String[] lines = fileContent.split(System.lineSeparator());
-        for (String line : lines) {
+        for (int i = 0; i < lines.length; i++) {
+            String line = lines[i];
             if (!line.equals(lineToRemove)) {
-                modifiedContent.append(line).append(System.lineSeparator());
+                modifiedContent.append(line);
+                if (i != lines.length - 1) {
+                    modifiedContent.append(System.lineSeparator());
+                }
             }
         }
         return modifiedContent.toString();
     }
+
 
     private void writeContentToFile(File file, String content) throws IOException {
         FileWriter writer = new FileWriter(file);

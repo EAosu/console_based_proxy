@@ -1,4 +1,6 @@
-package proxy;
+package proxy.commands;
+import proxy.commands.Command;
+
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;

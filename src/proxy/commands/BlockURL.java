@@ -1,7 +1,9 @@
-package proxy;
+package proxy.commands;
+
+import proxy.Errors;
 import java.io.*;
 
-public class BlockURL implements Command {
+public class BlockURL implements Command, Errors {
     private String URL;
 
     public BlockURL(String URL) {
@@ -16,7 +18,7 @@ public class BlockURL implements Command {
             writeContent(writer, file);
             closeWriter(writer);
         } catch (IOException ioe) {
-            System.err.println("Copying failed.");
+            System.err.println(WRITE_ERROR);
         }
     }
 

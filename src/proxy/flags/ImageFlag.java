@@ -1,8 +1,6 @@
-package proxy;
+package proxy.flags;
 
-import java.awt.*;
 import java.io.IOException;
-import java.util.function.Supplier;
 
 public class ImageFlag extends Flag
 {
@@ -12,8 +10,8 @@ public class ImageFlag extends Flag
     @Override
     public Boolean isValid(){
         try{
-            if (conType.startsWith("image/")) {
-                throw new IOException("denied");
+            if (data.startsWith(IMAGE_PREFIX)) {
+                throw new IOException(DENIED);
             }
             return true;
         }
