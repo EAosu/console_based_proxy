@@ -35,10 +35,8 @@ public class BlockURL implements Command, Errors {
     }
 
     private void writeContent(Writer writer, File file) throws IOException {
-        if (file.length() > 0) {
-            writer.write(System.lineSeparator());
-        }
         writer.write(URL);
+        writer.write(System.lineSeparator());
     }
 
     private void closeWriter(Writer writer) {

@@ -1,18 +1,18 @@
 package proxy.commands;
-import proxy.commands.Command;
+import proxy.Errors;
 
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PrintList implements Command {
+public class PrintList implements Command, Errors {
     @Override
     public void execute() {
         try {
             List<String> fileContents = readFileContents(fileName);
             printFileContents(fileContents);
         } catch (IOException ioe) {
-            System.err.println("Printing failed.");
+            System.out.println(READ_ERROR);
         }
     }
 
