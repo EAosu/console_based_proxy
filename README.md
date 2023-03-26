@@ -1,5 +1,5 @@
-    <h1>Program README</h1>
-    <p>
+
+<p>
       This program provides a command line interface for blocking and unblocking URLs, printing the list of blocked sites and downloading URL contents while applying different denying options. The program uses the following design patterns:
     </p>
     <ul>
