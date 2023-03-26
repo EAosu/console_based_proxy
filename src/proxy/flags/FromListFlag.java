@@ -12,7 +12,7 @@ import java.net.URISyntaxException;
 
 public class FromListFlag extends Flag {
     private Set<String> blockedSites;
-    private URL url;
+    private final URL url;
     public FromListFlag(String fileName, URL url) {
         super(fileName);
         this.url = url;

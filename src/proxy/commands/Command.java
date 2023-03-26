@@ -1,7 +1,7 @@
 package proxy.commands;
 
 public interface Command {
-    String fileName = new String("Blocked.txt");
+    String fileName = "Blocked.txt";
 
     void execute();
 }

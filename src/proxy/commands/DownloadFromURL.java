@@ -2,7 +2,6 @@ package proxy.commands;
 
 import proxy.*;
 import proxy.flags.*;
-import javax.naming.NamingException;
 import javax.naming.ServiceUnavailableException;
 import java.net.URL;
 import java.net.HttpURLConnection;
@@ -11,9 +10,9 @@ import java.util.function.Supplier;
 
 public class DownloadFromURL implements Command, Errors {
     FlagFactory flagFactory = new FlagFactory();
-    HttpURLConnection con = null;
-    String out = new String(), flags = new String();
-    private URL url;
+    HttpURLConnection con;
+    String out, flags;
+    private final URL url;
     private Integer statusCode;
     public static final String CONTENT_FIELD = "Content-Type", COOKIE_FIELD = "Set_Cookie";
     public static final char BLOCK_IMAGES = 'i', BLOCK_COOKIES = 'c', BLOCK_HTML = 'h', BLOCK_FROM_LIST = 'b';
@@ -29,32 +28,29 @@ public class DownloadFromURL implements Command, Errors {
         }
     }
     public void registerFlag(char flag) {
-        Supplier<Flag> supplier = null;
-        FlagType type = null;
+        Supplier<Flag> supplier;
+        FlagType type;
         switch (flag) {
-            case BLOCK_IMAGES:
+            case BLOCK_IMAGES -> {
                 String conTypeForImage = this.con.getHeaderField(CONTENT_FIELD);
                 supplier = () -> new ImageFlag(conTypeForImage);
                 type = FlagType.Images;
-                break;
-            case BLOCK_HTML:
+            }
+            case BLOCK_HTML -> {
                 String conTypeForHTML = this.con.getHeaderField(CONTENT_FIELD);
                 supplier = () -> new HTMLFlag(conTypeForHTML);
                 type = FlagType.HTML;
-                break;
-
-            case BLOCK_FROM_LIST:
+            }
+            case BLOCK_FROM_LIST -> {
                 supplier = () -> new FromListFlag(fileName, url);
                 type = FlagType.FromFile;
-                break;
-
-            case BLOCK_COOKIES:
+            }
+            case BLOCK_COOKIES -> {
                 String cookieHeader = this.con.getHeaderField(COOKIE_FIELD);
                 supplier = () -> new CookiesFlag(cookieHeader);
                 type = FlagType.Cookies;
-                break;
-            default:
-                throw new IllegalArgumentException(INVALID_OPTION);
+            }
+            default -> throw new IllegalArgumentException(INVALID_OPTION);
         }
         flagFactory.register(type, supplier);
     }
@@ -66,8 +62,7 @@ public class DownloadFromURL implements Command, Errors {
         con.connect();
 
         // get the HTTP response code
-        Integer responseCode = con.getResponseCode();
-        this.statusCode = responseCode;
+        this.statusCode = con.getResponseCode();
         return con;
     }
     private void download() throws IOException {
@@ -98,10 +93,9 @@ public class DownloadFromURL implements Command, Errors {
             for (int i = 0; i < flags.length(); i++) {
                 FlagType type = getType(flags.charAt(i));
                 Flag currFlag = flagFactory.getFlag(type);
-                if(currFlag == null) continue;
-                else if (type != FlagType.FromFile && statusCode != HttpURLConnection.HTTP_OK)
+                if (currFlag != null && type != FlagType.FromFile && statusCode != HttpURLConnection.HTTP_OK)
                         throw new ServiceUnavailableException(statusCode.toString());
-                else if (!currFlag.isValid()) return;
+                else if (currFlag != null && !currFlag.isValid()) return;
             }
             if(statusCode == HttpURLConnection.HTTP_OK) download();
             else throw new ServiceUnavailableException(statusCode.toString());
@@ -111,13 +105,12 @@ public class DownloadFromURL implements Command, Errors {
     }
 
     public FlagType getType(char c) {
-        switch (c) {
-            case BLOCK_IMAGES: return FlagType.Images;
-            case BLOCK_COOKIES: return FlagType.Cookies;
-            case BLOCK_HTML: return FlagType.HTML;
-            case BLOCK_FROM_LIST: return FlagType.FromFile;
-        }
-
-        return null;
+        return switch (c) {
+            case BLOCK_IMAGES -> FlagType.Images;
+            case BLOCK_COOKIES -> FlagType.Cookies;
+            case BLOCK_HTML -> FlagType.HTML;
+            case BLOCK_FROM_LIST -> FlagType.FromFile;
+            default -> null;
+        };
     }
 }

@@ -3,7 +3,7 @@ package proxy.flags;
 import proxy.Errors;
 
 public abstract class Flag implements Errors {
-    String data = new String();
+    String data;
     public static final String IMAGE_PREFIX = "image/";
     public static final String HTML_PREFIX = "text/html";
 

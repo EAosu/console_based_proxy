@@ -1,7 +1,6 @@
 package proxy;
-import proxy.commands.*;
 
-import javax.naming.NamingException;
+import proxy.commands.*;
 import java.net.UnknownHostException;
 import java.util.*;
 import java.io.IOException;
@@ -20,28 +19,20 @@ public class Console implements Errors {
 
             try {
                 switch (tokens[COMMAND]) {
-                    case BLOCK_URL:
+                    case BLOCK_URL -> {
                         checkUBArguments(tokens);
                         if (isValidUrl(tokens[FLAGS_OR_URL]))
                             executeCommand(new BlockURL(tokens[FLAGS_OR_URL]));
                         else throw new IllegalArgumentException(INVALID_URL);
-                        break;
-                    case UNBLOCK_URL:
+                    }
+                    case UNBLOCK_URL -> {
                         checkUBArguments(tokens);
                         executeCommand(new UnblockURL(tokens[FLAGS_OR_URL]));
-                        break;
-                    case PRINT:
-                        executeCommand(new PrintList());
-                        break;
-                    case DOWNLOAD:
-                        executeDownload(tokens);
-                        break;
-                    case EXIT:
-                        exit();
-                        break;
-                    default:
-                        System.out.println(INVALID_COMMAND);
-                        break;
+                    }
+                    case PRINT -> executeCommand(new PrintList());
+                    case DOWNLOAD -> executeDownload(tokens);
+                    case EXIT -> exit();
+                    default -> System.out.println(INVALID_COMMAND);
                 }
             } catch (UnknownHostException e) {
                 System.out.println(INVALID_URL);
@@ -63,9 +54,9 @@ public class Console implements Errors {
     }
 
     private void executeDownload(String[] tokens) throws IOException {
-        String flags = "";
-        String url = "";
-        String out = "";
+        String flags;
+        String url;
+        String out;
 
         if(tokens.length < DOWNLOAD_ARGUMENT_MIN)
             throw new IllegalArgumentException(INVALID_COMMAND);

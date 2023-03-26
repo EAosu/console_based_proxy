@@ -1,11 +1,10 @@
 package proxy.commands;
 import proxy.Errors;
-import proxy.commands.Command;
 
 import java.io.*;
 
 public class UnblockURL implements Command, Errors {
-    private String URL;
+    private final String URL;
     public UnblockURL(String URL) {
         this.URL = URL;
     }

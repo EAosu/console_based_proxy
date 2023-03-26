@@ -9,14 +9,14 @@ public class PrintList implements Command, Errors {
     @Override
     public void execute() {
         try {
-            List<String> fileContents = readFileContents(fileName);
+            List<String> fileContents = readFileContents();
             printFileContents(fileContents);
         } catch (IOException ioe) {
             System.out.println(READ_ERROR);
         }
     }
 
-    private List<String> readFileContents(String fileName) throws IOException {
+    private List<String> readFileContents() throws IOException {
         List<String> fileContents = new ArrayList<>();
         BufferedReader reader = new BufferedReader(new FileReader(fileName));
         String line;

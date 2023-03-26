@@ -4,7 +4,7 @@ import proxy.Errors;
 import java.io.*;
 
 public class BlockURL implements Command, Errors {
-    private String URL;
+    private final String URL;
 
     public BlockURL(String URL) {
         this.URL = URL;
@@ -13,16 +13,16 @@ public class BlockURL implements Command, Errors {
     @Override
     public void execute() {
         try {
-            File file = getFile(fileName);
+            File file = getFile();
             Writer writer = getWriter(file);
-            writeContent(writer, file);
+            writeContent(writer);
             closeWriter(writer);
         } catch (IOException ioe) {
             System.err.println(WRITE_ERROR);
         }
     }
 
-    private File getFile(String fileName) throws IOException {
+    private File getFile() throws IOException {
         File file = new File(fileName);
         if (!file.exists()) {
             file.createNewFile();
@@ -34,7 +34,7 @@ public class BlockURL implements Command, Errors {
         return new FileWriter(file, true);
     }
 
-    private void writeContent(Writer writer, File file) throws IOException {
+    private void writeContent(Writer writer) throws IOException {
         writer.write(URL);
         writer.write(System.lineSeparator());
     }
