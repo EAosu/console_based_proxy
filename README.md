@@ -1,6 +1,5 @@
 <p> Submitted By: </p>
-<p> Ely Asaf- 319027355 </p>
-<p> Nadav Malul- 206762973 </p>
+
 <p>
       This program provides a command line interface for blocking and unblocking URLs, printing the list of blocked sites and downloading URL contents while applying different denying options. The program uses the following design patterns:
     </p>
